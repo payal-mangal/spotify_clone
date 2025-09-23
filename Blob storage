@@ -1,0 +1,20 @@
+const { BlobServiceClient } = require("@azure/storage-blob");
+
+const connectionString = process.env.BlobStorageConnection;
+const containerName = "images";
+
+async function getImageUrl(fileName) {
+  const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+  const blobClient = containerClient.getBlobClient(fileName);
+  return blobClient.url;  // e.g. https://<account>.blob.core.windows.net/images/shoe1.jpg
+}
+
+async function uploadImage(filePath, fileName) {
+  const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+  const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+
+  await blockBlobClient.uploadFile(filePath);
+  return blockBlobClient.url;
+}
